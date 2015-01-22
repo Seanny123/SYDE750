@@ -13,7 +13,7 @@ def lif_neuron(x_inter, max_fire, pref, t_ref=0.002, t_rc=0.02):
 	J_bias = 1.0 - alpha * x_inter
 	def lif(x):
 		# because I can't figure out how to do the dot product with numpy
-		J = pref[0]*x[0]+pref[1]*x[1] * alpha + J_bias
+		J =  pref[0]*x[0]+pref[1]*x[1] * alpha + J_bias
 		
 		return_val = np.zeros(J.shape)
 		# Select all the values where J > 1
@@ -45,21 +45,21 @@ neuron = lif_neuron(x_cept, max_firing_rate, pref)
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 # this certainly isn't passing in the right thing
-ax.plot_surface(X, Y, neuron( pref[0]*X+pref[1]*Y ), 
+ax.plot_surface(X, Y, neuron( [X, Y] ), 
                     linewidth=0, cstride=1, rstride=1, cmap=plt.cm.jet)
 plt.show()
 
 # grab the unit circle points
-theta = np.linspace(0, 2*numpy.pi, 100)
-xdata = np.array([numpy.cos(theta), numpy.sin(theta)])
-ydata = neuron( np.dot(xdata.T, e) )
+theta = np.linspace(0, 2*np.pi, 100)
+xdata = np.array([np.cos(theta), np.sin(theta)])
+ydata = neuron( np.dot(xdata.T, pref) )
 
 # fit the function
 def cos_opt_func(theta, A, B, C, D):
 	return A*np.cos(B*theta + C) + D
 
-scipy.optimize.curve_fit(cos_opt_func, xdata, ydata)
-
+popt, _ = scipy.optimize.curve_fit(cos_opt_func, xdata, ydata)
+ipdb.set_trace()
 # compare
 
 # 2_2
