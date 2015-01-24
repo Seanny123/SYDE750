@@ -37,23 +37,12 @@ def lif_neuron(x_inter, max_fire, gain_sign, t_ref=0.002, t_rc=0.02):
 		return return_val
 	return lif
 
-"""
-def lol_neuron():
-	def lol(x):
-		J = x + 1
-		J[J > 1] += 1
-		return J
-	return lol
-"""
-
 x_vals = np.arange(0.8, 1.5, 0.05)
 x_cept = 0.95
 gain_sign = 1
 max_firing_rate = 120
 neuron = lif_neuron(x_cept, max_firing_rate, gain_sign)
 print(neuron(x_vals))
-ipdb.set_trace()
 plt.plot(x_vals, neuron(x_vals))
 plt.grid('on')
 plt.show()
-ipdb.set_trace()
