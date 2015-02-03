@@ -31,7 +31,7 @@ fig.savefig("1_3a")
 A_noisy = A.T + np.random.normal(scale=0.2*np.max(A), size=A.T.shape)
 decoders_noisy, x_hat_noisy = get_decoders(A_noisy.T, S, x_vals)
 
-plot_xhat(x_vals, x_hat_noisy, "noisy neurons, noiseless decoders", "1_3b")
+plot_xhat(x_vals, x_hat_noisy, "noisy neurons, noisy decoders", "1_3b")
 
 rmse.append(calc_rmse(x_hat_noisy, x_vals))
 print("rmse %s" %rmse[-1])

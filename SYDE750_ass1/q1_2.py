@@ -5,6 +5,8 @@ import matplotlib as mpl
 
 from utils import calc_rmse, rec_lin_neuron, lif_neuron, get_activities, get_decoders, plot_xhat
 
+logfile = open("test_results.txt", "w")
+
 def q1_2(noise_val, filename):
 	N_vals = [4, 8, 16, 32, 64, 128, 256]#, 512, 1024, 2048]#, 4096, 8192]
 	err_dist = []
@@ -31,13 +33,16 @@ def q1_2(noise_val, filename):
 
 			# generate with noise
 			A_noisy = A.T + np.random.normal(scale=0.2*np.max(A), size=A.T.shape)
-			decoders_noisy, x_hat_noisy = get_decoders(A_noisy.T, S, x_vals)
-			# get E_noise
+			#decoders_noisy, x_hat_noisy = get_decoders(A_noisy.T, S, x_vals)
+			x_hat_noisy = np.dot(A_noisy, decoders)
+			# get E_noise, which is the remaining error after removing E_dist
 			e_noise = calc_rmse(x_hat_noisy, x_vals)
-			e_noise_avg += (e_noise - e_dist)
+			e_noise_avg += e_noise - e_dist
 
-		err_dist.append(e_dist_avg/5)
-		err_noise.append(e_noise_avg/5)
+		print(e_noise_avg)
+		# average the result over the 5 runs
+		err_dist.append(e_dist_avg/5.0)
+		err_noise.append(e_noise_avg/5.0)
 
 	# plot the result
 	over_N = lambda N: 1.0/N
@@ -49,25 +54,26 @@ def q1_2(noise_val, filename):
 	plt.loglog(N_vals, over_N_squared(np.array(N_vals)), label="1/N^2")
 	plt.loglog(N_vals, over_N_4(np.array(N_vals)), label="1/N^4")
 	plt.loglog(N_vals, err_dist, label="Distortion Error")
-	#plt.set_yscale('log')
-	#plt.set_xscale('log')
 	plt.ylabel("Error")
 	plt.xlabel("Number of Neurons")
 	plt.title("Distortion Error with Noise=%s" %noise_val)
 	plt.legend(loc=3)
 	fig.savefig("dist_%s" %filename)
+	logfile.write(str(err_dist))
+	logfile.write("\n")
 
 	# plot the noise error proportional to 1/N
 	fig = plt.figure()
 	plt.loglog(N_vals, over_N(np.array(N_vals)), label="1/N")
-	plt.loglog(N_vals, err_dist, label="Noise Error")
-	#plt.set_yscale('log')
-	#plt.set_xscale('log')
+	print(len(err_noise))
+	plt.loglog(N_vals, err_noise, label="Noise Error")
 	plt.ylabel("Error")
 	plt.xlabel("Number of Neurons")
 	plt.title("Noise Error with Noise=%s" %noise_val)
 	plt.legend(loc=3)
 	fig.savefig("noise_%s" %filename)
+	logfile.write(str(err_noise))
+	logfile.write("\n")
 
 q1_2(0.1, "1_2_high")
 q1_2(0.01, "1_2_low")

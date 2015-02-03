@@ -13,14 +13,11 @@ def calc_rmse(predictions, targets):
 
 def rec_lin_neuron(x_inter, max_fire, x_max=1.0):
 	def rec_lin(x):
-		return np.minimum(
-				np.maximum(
+		return np.maximum(
 					x * (max_fire/(x_max-x_inter))
 					- x_inter * (max_fire/(x_max-x_inter)),
 					np.zeros(x.size)
-				),
-				max_fire
-			)
+				)
 	return rec_lin
 
 def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02):
@@ -35,16 +32,12 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02):
 		J = x * alpha + J_bias
 		return_val = np.zeros(x.shape[0])
 		# Select all the values where J > 1
-		return_val[J > 1] += np.minimum(
-					np.maximum(
+		return_val[J > 1] += np.maximum(
 						# Caluclate the activity
 						1.0/(t_ref-t_rc*np.log(1-1/J[J > 1])),
 						# make it zero if it's below zero
 						np.zeros(return_val[J > 1].size)
-					),
-					# make it the max firing rate if it's above the max firing rate
-					max_fire
-				)
+					)
 		return return_val
 	return lif
 

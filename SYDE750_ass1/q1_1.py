@@ -5,6 +5,8 @@ import matplotlib as mpl
 
 from utils import calc_rmse, rec_lin_neuron, lif_neuron, get_activities, get_decoders, plot_xhat
 
+logfile = open("log_q1_1.txt", "w")
+
 n_neurons = 16
 rmse = []
 
@@ -28,6 +30,8 @@ fig.savefig("1_1a")
 
 decoders, x_hat = get_decoders(A, S, x_vals)
 print("decoders %s" %decoders)
+logfile.write(str(decoders))
+logfile.write("\n")
 
 plot_xhat(x_vals, x_hat, "noiseless neurons, noiseless decoders", "1_1c")
 
@@ -60,3 +64,4 @@ plot_xhat(x_vals, noiseless_xhat, "noiseless neurons, noisy decoders", "1_1e_noi
 
 rmse.append(calc_rmse(noiseless_xhat, x_vals))
 print("rmse %s" %rmse[-1])
+logfile.write(str(rmse))

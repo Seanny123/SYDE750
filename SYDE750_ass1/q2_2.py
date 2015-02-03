@@ -35,8 +35,7 @@ def get_2d_decoders(A, S, x_vals):
 	# I'll get two dimensional decoders....
 	decoders_0 = np.dot(np.linalg.pinv(gamma), upsilon_0)
 	decoders_1 = np.dot(np.linalg.pinv(gamma), upsilon_1)
-	# Which I can just add up again to get the approximate value?
-	# It's worth a shot
+	# Which I can just add up again to get the approximate value
 	x_hat = np.dot(A.T, decoders_0) + np.dot(A.T, decoders_1)
 	decoders = np.array([decoders_0, decoders_1])
 	return decoders, x_hat
@@ -75,11 +74,6 @@ A_noisy = A.T + np.random.normal(scale=0.2*np.max(A), size=A.T.shape)
 S = x_vals[0].size
 decoders_noisy, x_hat_noisy = get_2d_decoders(A_noisy.T, S, x_vals)
 
-# for these test values, do I need to regenerate decoders or do I just use the existing decoders, but limit how many of them I need, since there aren't as many x-values?
-# is this the same as padding the rest of the x-values with zeros?
-# nope, because there's some neurons that really like zeros
-# test it out with the other x-values
-# That's not how you generate points in the unit circle
 test_vals = gen_circle_points(20)
 new_A, neurons = get_2d_activities(
 	lif_neuron,

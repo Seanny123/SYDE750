@@ -16,16 +16,12 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02):
 		
 		return_val = np.zeros(J.shape)
 		# Select all the values where J > 1
-		return_val[J > 1] += np.minimum(
-					np.maximum(
-						# Caluclate the activity
-						1/(t_ref-t_rc*np.log(1-1/J[J > 1])),
-						# make it zero if it's below zero
-						np.zeros(return_val[J > 1].size)
-					),
-					# make it the max firing rate if it's above the max firing rate
-					max_fire
-				)
+		return_val[J > 1] += np.maximum(
+							# Caluclate the activity
+							1/(t_ref-t_rc*np.log(1-1/J[J > 1])),
+							# make it zero if it's below zero
+							np.zeros(return_val[J > 1].size)
+						)
 		# this should also return a scalar
 		return return_val
 	return lif
