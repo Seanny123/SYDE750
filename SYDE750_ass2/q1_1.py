@@ -40,12 +40,7 @@ def failed_whitenoise(T, dt, rms, limit, seed):
 	time_domain = np.real(time_domain)
 	# calculate the rms and scale it
 	curr_rms = np.sqrt(np.sum(np.square(time_domain))/T)
-	print("previously: %s" %curr_rms)
-	#time_domain = np.square(rms/curr_rms)*time_domain
 	time_domain = (rms/curr_rms)*time_domain
-	curr_rms = np.sqrt(np.sum(np.square(time_domain))/T)
-	print("desired: %s" %rms)
-	print("result: %s" %curr_rms)
 	return time_domain
 
 res = failed_whitenoise(1, 0.001, 0.5, 5, 0)
