@@ -27,3 +27,25 @@ plt.plot(np.zeros(res_1.shape))
 plt.savefig("3_b")
 
 input_sig = lambda t: 0.5*np.sin(10*np.pi*t)
+neurons = two_neurons()
+res_sin = []
+for t in time_steps:
+	res_sin.append(neurons(input_sig(t)))
+
+fig = plt.figure()
+plt.title("Two neurons response to sin input")
+plt.plot(res_sin)
+plt.plot(input_sig(time_steps))
+plt.savefig("3_c")
+
+noise, _ = whitenoise(1, 0.001, 0.5, 30, 0)
+neurons = two_neurons()
+res_noise = []
+for val in noise:
+	res_noise.append(neurons(val))
+
+fig = plt.figure()
+plt.title("Two neurons response to noise input")
+plt.plot(res_noise)
+plt.plot(noise)
+plt.savefig("3_d")
