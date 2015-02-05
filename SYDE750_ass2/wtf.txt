@@ -1,5 +1,6 @@
-I still don't understand Question 1.2
+I still don't understand Question 1.2. Okay, now I do.
 Oh god, there's something terribly wrong with my spiking neuron equations.
 For 5 c), do you still mean h(t)? I just don't see why plotting the frequency and the time domain of it will be that interesting.
 In 5 c), A is going to be temporal sikes for each neuron? So I'm going to have to make an ensemble?
+
 In 4, do you actually want the exact same signal as question 3d or you just want to generate another whitenoise signal? I'm assuming it's just another white noise signal, because I can't imagine why you'd want the same exact frequency again.

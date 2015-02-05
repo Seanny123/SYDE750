@@ -3,10 +3,11 @@ import ipdb
 import matplotlib.pyplot as plt
 from utils import SpikingLif, modified_lif, whitenoise
 
+dt = 0.001
 lif_neuron = modified_lif(40, 150)
 # try to make the spiking version work
-spike = SpikingLif()
-time_steps = np.arange(0, 1, 0.001)
+spike = SpikingLif(dt=dt)
+time_steps = np.arange(0, 1, dt)
 res_0 = []
 for t in time_steps:
 	res_0.append(
@@ -36,7 +37,6 @@ plt.title("Spiking for one neuron, two inputs")
 plt.savefig("2_a")
 
 # what number of spikes are we expecting here anyways?
-
 noise, _ = whitenoise(1, 0.001, 0.5, 30, 0)
 noise_res = []
 for val in noise:

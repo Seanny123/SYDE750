@@ -1,4 +1,5 @@
 import numpy as np
+import ipdb
 import matplotlib.pyplot as plt
 
 def whitenoise(T, dt, rms, limit, seed):
@@ -39,11 +40,12 @@ def whitenoise(T, dt, rms, limit, seed):
 	return time_domain, (rms/curr_rms)*final_coef
 
 class SpikingLif(object):
-	def __init__(self, t_ref=0.002, t_rc=0.2, dt=0.0001):
+	def __init__(self, t_ref=0.002, t_rc=0.02, dt=0.001):
 		self.t_ref = t_ref
 		self.t_rc = t_rc
 		self.refac_time = 0.0
 		self.refac = True
+		print("dt: %s" %dt)
 		self.dt = dt
 		self.potential = 0.0
 		self.spike_count = 0
@@ -51,9 +53,12 @@ class SpikingLif(object):
 	def spike(self, current):
 		if(self.refac == False):
 			# use that differential equation
-			dV = 1/self.t_rc*(current-self.potential)*self.dt
+			dV = 1.0/self.t_rc*(current-self.potential)*self.dt
+			#ipdb.set_trace()
 			self.potential += dV
+			# If we've reached 1, spike
 			if(self.potential >= 1):
+				# start the refactory period and reset the potential
 				self.refac = True
 				self.potential = 0.0
 				self.spike_count += 1
@@ -63,6 +68,7 @@ class SpikingLif(object):
 			# increment the refactory period
 			self.refac_time += self.dt
 			if(self.refac_time >= self.t_ref):
+				# if we've reached the maximum refactory period, reset it
 				self.refac = False
 				self.refac_time = 0.0
 			return 0.0
@@ -79,18 +85,9 @@ def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02):
 		)
 	)
 	alpha = beta - J_bias
-	def lif(x):
-		J = x * alpha + J_bias
-		return_val = np.zeros(x.shape[0])
-		# Select all the values where J > 1
-		return_val[J > 1] += np.maximum(
-						# Caluclate the activity
-						1.0/(t_ref-t_rc*np.log(1-1/J[J > 1])),
-						# make it zero if it's below zero
-						np.zeros(return_val[J > 1].size)
-					)
-		return return_val
-	return lif
+	def lif_current(x):
+		return x * alpha + J_bias
+	return lif_current
 
 def two_neurons():
 	lif1 = modified_lif(40, 150)
