@@ -26,3 +26,4 @@ for tau in tau_list:
 	plt.plot(res, label="tau=%s" %tau)
 plt.legend()
 plt.savefig("5_b")
+
