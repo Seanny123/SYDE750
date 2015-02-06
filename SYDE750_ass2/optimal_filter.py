@@ -1,14 +1,16 @@
-import syde556
 import numpy
+import numpy as np
+import ipdb
+import matplotlib.pyplot as plt
 
 from utils import whitenoise, two_neurons
 
 T = 4.0         # length of signal in seconds
 dt = 0.001      # time step size
 
-def ideal_filter(T, dt):
+def ideal_filter(T, dt, limit=5):
 	# Generate bandlimited white noise (use your own function from part 1.1)
-	x, X = whitenoise(T, dt, rms=0.5, limit=5, seed=3)
+	x, X = whitenoise(T, dt, rms=0.5, limit=limit, seed=3)
 
 	Nt = len(x)                # number of time steps equal to the length of input
 	t = numpy.arange(Nt) * dt  # generate the timestep by scaling a range by dt
@@ -92,6 +94,7 @@ pylab.plot(t-T/2, h)       # plot the optimal filter in the time domain
 pylab.title('Optimal Filter in Time Domain')
 pylab.xlabel('Time (s)')
 pylab.xlim(-0.5, 0.5)
+pylab.savefig("4_b")
 
 
 pylab.figure(3)
@@ -103,3 +106,32 @@ pylab.legend(loc='best')
 pylab.xlabel('Time (s)')
 
 pylab.show()
+
+limit_list = [2, 10, 30]
+h_list = []
+for limit in limit_list:
+	freq, XP, RP, H, h, r, x, xhat = ideal_filter(T, dt, limit)
+	h_list.append(h)
+
+fig = plt.figure()
+for i, h_val in enumerate(h_list):
+	plt.plot(h_val, label="limit=%s" %limit_list[i])
+plt.savefig("4_e")
+
+T_list = [1, 4, 10]
+H_list = []
+h_list = []
+for T_val in T_list:
+	freq, XP, RP, H, h, r, x, xhat = ideal_filter(T, dt, limit)
+	H_list.append(np.abs(H))
+	h_list.append(h)
+
+fig = plt.figure()
+for i, H_val in enumerate(H_list):
+	plt.plot(H_val, label="limit=%s" %T_list[i])
+plt.savefig("4_f_1")
+
+fig = plt.figure()
+for i, h_val in enumerate(h_list):
+	plt.plot(h_val, label="limit=%s" %T_list[i])
+plt.savefig("4_f_2")

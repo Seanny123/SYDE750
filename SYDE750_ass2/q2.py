@@ -1,7 +1,7 @@
 import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
-from utils import SpikingLif, modified_lif, whitenoise
+from utils import SpikingLif, modified_lif, whitenoise, spiking
 
 dt = 0.001
 lif_neuron = modified_lif(40, 150)
@@ -11,22 +11,26 @@ time_steps = np.arange(0, 1, dt)
 res_0 = []
 for t in time_steps:
 	res_0.append(
-		(spike.spike(
-			lif_neuron(
-				np.array([0])
-			)[0]
-		) < 2)
+		spiking(
+			spike.spike(
+				lif_neuron(
+					0
+				)
+			)
+		)
 	)
 print(spike.spike_count)
 spike.spike_count = 0
 res_1 = []
 for t in time_steps:
 	res_1.append(
-		(spike.spike(
-			lif_neuron(
-				np.array([1])
-			)[0]
-		) < 2)
+		spiking(
+			spike.spike(
+				lif_neuron(
+					1
+				)
+			)
+		)
 	)
 print(spike.spike_count)
 fig = plt.figure()
@@ -41,11 +45,13 @@ noise, _ = whitenoise(1, 0.001, 0.5, 30, 0)
 noise_res = []
 for val in noise:
 	noise_res.append(
-		(spike.spike(
-			lif_neuron(
-				np.array([val])
-			)[0]
-		) < 2)
+		spiking(
+			spike.spike(
+				lif_neuron(
+					val
+				)
+			)
+		)
 	)
 
 # this plot really looks terrible, like it's not responding to the crests and valleys at all. How do I make it look better?
@@ -61,8 +67,8 @@ for i in range(200):
 	spike_res.append(
 		spike.spike(
 			lif_neuron(
-				np.array([noise[i]])
-			)[0]
+				noise[i]
+			)
 		)
 	)
 

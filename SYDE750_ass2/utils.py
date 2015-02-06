@@ -2,6 +2,18 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
+def calc_rmse(predictions, targets):
+	return np.sqrt( (np.square(predictions - targets)).mean() )
+
+def drms(sig):
+	return np.sqrt(np.sum(np.square(sig))/sig.size)
+
+def spiking(potential):
+	if(potential < 2):
+		return 0.0
+	else:
+		return 1.0
+
 def whitenoise(T, dt, rms, limit, seed):
 	# randomly generate co-efficient from a gaussian distribution equal to half the size of frequencies
 	np.random.seed(seed)
@@ -35,7 +47,7 @@ def whitenoise(T, dt, rms, limit, seed):
 	# make it totally real
 	time_domain = np.real(time_domain)
 	# calculate the rms and scale it
-	curr_rms = np.sqrt(np.sum(np.square(time_domain))/T)
+	curr_rms = drms(time_domain)
 	time_domain = (rms/curr_rms)*time_domain
 	return time_domain, (rms/curr_rms)*final_coef
 
@@ -45,7 +57,6 @@ class SpikingLif(object):
 		self.t_rc = t_rc
 		self.refac_time = 0.0
 		self.refac = True
-		print("dt: %s" %dt)
 		self.dt = dt
 		self.potential = 0.0
 		self.spike_count = 0
@@ -86,7 +97,12 @@ def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02):
 	)
 	alpha = beta - J_bias
 	def lif_current(x):
-		return x * alpha + J_bias
+		J = x * alpha + J_bias
+		if(J > 0):
+			return J
+		else:
+			return 0.0
+
 	return lif_current
 
 def two_neurons():
@@ -96,11 +112,15 @@ def two_neurons():
 	n2 = SpikingLif()
 
 	def two_spikes(x):
-		spike1 = (n1.spike(
-			lif1(np.array([x]))
-		) < 2)
-		spike2 = (n2.spike(
-			lif2(np.array([x*-1]))
-		) < 2)
+		spike1 = spiking(
+			n1.spike(
+				lif1(x)
+			)
+		)
+		spike2 = spiking(
+			n2.spike(
+				lif2(x*-1)
+			)
+		)
 		return spike1, spike2
 	return two_spikes

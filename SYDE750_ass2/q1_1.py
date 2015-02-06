@@ -19,6 +19,7 @@ for limit in limit_list:
 	fig.savefig("1_1a_freq%s" %limit)
 
 res, coef = whitenoise(1, 0.001, 0.5, 10, 0)
+
 average_coef = np.zeros(coef.shape)
 average_coef = average_coef + np.abs(coef)
 
