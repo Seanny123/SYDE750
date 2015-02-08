@@ -9,22 +9,24 @@ sys.excepthook = ultratb.FormattedTB(mode='Verbose',
 
 from utils import whitenoise
 
+period = 1
+
 limit_list = [5, 10, 20]
 for limit in limit_list:
-	res, _ = whitenoise(1, 0.001, 0.5, limit, 0)
+	res, _ = whitenoise(period, 0.001, 0.5, limit, 0)
 	fig = plt.figure()
 	plt.plot(res)
 	plt.title("Whitenoise Limited to %sHz" %limit)
 	plt.xlabel("Time (s)")
 	fig.savefig("1_1a_freq%s" %limit)
 
-res, coef = whitenoise(1, 0.001, 0.5, 10, 0)
+res, coef = whitenoise(period, 0.001, 0.5, 10, 0)
 
 average_coef = np.zeros(coef.shape)
 average_coef = average_coef + np.abs(coef)
 
 for _ in range(99):
-	res, coef = whitenoise(1, 0.001, 0.5, 10, 0)
+	res, coef = whitenoise(period, 0.001, 0.5, 10, 0)
 	average_coef = average_coef + np.abs(coef)
 average_coef = average_coef / 100
 avg = np.fft.fftshift(average_coef)

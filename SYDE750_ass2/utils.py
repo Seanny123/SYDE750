@@ -24,8 +24,7 @@ def whitenoise(T, dt, rms, limit, seed):
 				)
 
 	# eliminate anything over the limit
-	# wait, why does this work?
-	frequencies = np.arange(0, coef.size*2, 2.0/T)
+	frequencies = np.arange(0, coef.size*2/T, 2.0/T)
 	coef[frequencies > limit] = 0.0
 	coef[0] = 0.0
 	if(coef.size % 2 == 1):

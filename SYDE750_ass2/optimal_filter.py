@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 
 from utils import whitenoise, two_neurons
 
-T = 4.0         # length of signal in seconds
+T = 1.0         # length of signal in seconds
 dt = 0.001      # time step size
 
 def ideal_filter(T, dt, limit=5):
 	# Generate bandlimited white noise (use your own function from part 1.1)
 	x, X = whitenoise(T, dt, rms=0.5, limit=limit, seed=3)
+	X = np.fft.fftshift(X)
 
 	Nt = len(x)                # number of time steps equal to the length of input
 	t = numpy.arange(Nt) * dt  # generate the timestep by scaling a range by dt
@@ -23,25 +24,29 @@ def ideal_filter(T, dt, limit=5):
 	x1 = 1.0                 # firing rate at x=x1 is a1
 	a1 = 150.0
 
-	# 
+	# calculate the parameters for the neurons
 	eps = tau_rc/tau_ref
 	r1 = 1.0 / (tau_ref * a0)
 	r2 = 1.0 / (tau_ref * a1)
 	f1 = (r1 - 1) / eps
 	f2 = (r2 - 1) / eps
-	alpha = (1.0/(numpy.exp(f2)-1) - 1.0/(numpy.exp(f1)-1))/(x1-x0) 
-	x_threshold = x0-1/(alpha*(numpy.exp(f1)-1))              
-	Jbias = 1-alpha*x_threshold;   
+	alpha = (1.0/(numpy.exp(f2)-1) - 1.0/(numpy.exp(f1)-1))/(x1-x0)
+	x_threshold = x0-1/(alpha*(numpy.exp(f1)-1))
+	Jbias = 1-alpha*x_threshold
 
 	# Simulate the two neurons (use your own function from part 3)
-	spikes = two_neurons(x, dt, alpha, Jbias, tau_rc, tau_ref)
+	neurons = two_neurons()
+	spikes = []
+	for val in x:
+		spikes.append(neurons(val))
+	spikes = np.array(spikes)
 
 
 	freq = numpy.arange(Nt)/T - Nt/(2.0*T)   # create symmetrical frequency range
 	omega = freq*2*numpy.pi                  # frequency to radians
 
-	r = spikes[0] - spikes[1]                # response of the two neurons combined together
-	R = numpy.fft.fftshift(numpy.fft.fft(r)) # transform response to frequency domain
+	r = spikes[:, 0] - spikes[:, 1]                # response of the two neurons combined together
+	R = numpy.fft.fftshift(numpy.fft.fft(r.T)) # transform response to frequency domain
 
 
 	sigma_t = 0.025                          # the window size
@@ -62,9 +67,9 @@ def ideal_filter(T, dt, limit=5):
 	XHAT = H*R                            # approximate the signal by convolving the response with the optimal filter
 
 	xhat = numpy.fft.ifft(numpy.fft.ifftshift(XHAT)).real  # bring the approximate signal into the time domain
-	return freq, XP, RP, H, h, r, x, xhat
+	return freq, XP, RP, H, h, r, x, xhat, t
 
-freq, XP, RP, H, h, r, x, xhat = ideal_filter(T, dt)
+freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T, dt)
 
 import pylab
 
@@ -105,33 +110,51 @@ pylab.title('Comparison of Filter Result and Real Signal')
 pylab.legend(loc='best')
 pylab.xlabel('Time (s)')
 
-pylab.show()
+#pylab.show()
 
 limit_list = [2, 10, 30]
 h_list = []
 for limit in limit_list:
-	freq, XP, RP, H, h, r, x, xhat = ideal_filter(T, dt, limit)
+	freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T, dt, limit)
 	h_list.append(h)
 
 fig = plt.figure()
 for i, h_val in enumerate(h_list):
 	plt.plot(h_val, label="limit=%s" %limit_list[i])
+plt.legend()
+plt.title("Effect of Changing Limit on Filter")
+plt.xlabel("Time (s)")
 plt.savefig("4_e")
 
 T_list = [1, 4, 10]
 H_list = []
 h_list = []
+# TODO: resize these mofos
 for T_val in T_list:
-	freq, XP, RP, H, h, r, x, xhat = ideal_filter(T, dt, limit)
-	H_list.append(np.abs(H))
-	h_list.append(h)
+	freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T_val, dt)
+	#ipdb.set_trace()
+	H_list.append(
+		H[(H.size/2-400):(H.size/2+400)]
+	)
+	h_list.append(
+		h[(h.size/2-200):(h.size/2+200)]
+	)
+
+omega = np.linspace(-400, 400, H_list[0].size)
+time_vals = np.linspace(-200, 200, h_list[0].size)
 
 fig = plt.figure()
 for i, H_val in enumerate(H_list):
-	plt.plot(H_val, label="limit=%s" %T_list[i])
+	plt.plot(omega, H_val, label="period=%s" %T_list[i])
+plt.legend()
+plt.title("Effect of Period Change on Filter in Time Domain")
+plt.xlabel('$\omega$')
 plt.savefig("4_f_1")
 
 fig = plt.figure()
 for i, h_val in enumerate(h_list):
-	plt.plot(h_val, label="limit=%s" %T_list[i])
+	plt.plot(time_vals, h_val, label="period=%s" %T_list[i])
+plt.legend()
+plt.title("Effect of Period Change on Filter in Frequency Domain")
+plt.xlabel("Time (s)")
 plt.savefig("4_f_2")
