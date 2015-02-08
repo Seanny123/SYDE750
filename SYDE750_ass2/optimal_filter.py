@@ -67,15 +67,16 @@ def ideal_filter(T, dt, limit=5):
 	XHAT = H*R                            # approximate the signal by convolving the response with the optimal filter
 
 	xhat = numpy.fft.ifft(numpy.fft.ifftshift(XHAT)).real  # bring the approximate signal into the time domain
-	return freq, XP, RP, H, h, r, x, xhat, t
+	return freq, XP, RP, H, h, r, x, xhat, XHAT, t
 
-freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T, dt)
+freq, XP, RP, H, h, r, x, xhat, XHAT, t = ideal_filter(T, dt)
 
 import pylab
 
 pylab.figure(1)
 pylab.subplot(1,2,1)
 pylab.plot(freq, numpy.sqrt(XP), label='Signal')  # plot the frequency spectrum of the input signal
+pylab.plot(freq, XHAT, label='Approximation')
 pylab.legend()
 pylab.xlabel('$\omega$')
 pylab.ylabel('$|X(\omega)|$')
@@ -83,8 +84,9 @@ pylab.ylabel('$|X(\omega)|$')
 pylab.subplot(1,2,2)
 pylab.plot(freq, numpy.sqrt(RP), label='Response')  # plot the frequency spectrum of the response
 pylab.legend()
-pylab.xlabel('Frequency (Hz)')
+pylab.xlabel('$\omega$')
 pylab.ylabel('$|R(\omega)|$')
+pylab.savefig("4_d")
 
 
 pylab.figure(2)
@@ -109,13 +111,14 @@ pylab.plot(t, xhat, label='approximation')                     # plot the approx
 pylab.title('Comparison of Filter Result and Real Signal')
 pylab.legend(loc='best')
 pylab.xlabel('Time (s)')
+pylab.savefig("4_c")
 
 #pylab.show()
 
 limit_list = [2, 10, 30]
 h_list = []
 for limit in limit_list:
-	freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T, dt, limit)
+	freq, XP, RP, H, h, r, x, xhat, XHAT, t = ideal_filter(T, dt, limit)
 	h_list.append(h)
 
 fig = plt.figure()
@@ -131,7 +134,7 @@ H_list = []
 h_list = []
 # TODO: resize these mofos
 for T_val in T_list:
-	freq, XP, RP, H, h, r, x, xhat, t = ideal_filter(T_val, dt)
+	freq, XP, RP, H, h, r, x, xhat, XHAT, t = ideal_filter(T_val, dt)
 	#ipdb.set_trace()
 	H_list.append(
 		H[(H.size/2-400):(H.size/2+400)]

@@ -25,8 +25,8 @@ res, coef = whitenoise(period, 0.001, 0.5, 10, 0)
 average_coef = np.zeros(coef.shape)
 average_coef = average_coef + np.abs(coef)
 
-for _ in range(99):
-	res, coef = whitenoise(period, 0.001, 0.5, 10, 0)
+for seed in range(1, 99):
+	res, coef = whitenoise(period, 0.001, 0.5, 10, seed)
 	average_coef = average_coef + np.abs(coef)
 average_coef = average_coef / 100
 avg = np.fft.fftshift(average_coef)

@@ -37,14 +37,12 @@ for val in noise:
 	res_noise.append(neurons(val))
 res_noise = np.array(res_noise)
 
-# what's the right size for these things?
 fspikes1 = np.convolve(res_noise[:,0], h, mode='same')
 fspikes2 = np.convolve(res_noise[:,1], h, mode='same')
 
 A = np.array([fspikes1, fspikes2]).T
 S = fspikes1.shape[0]
 
-#ipdb.set_trace()
 gamma = np.dot(A.T, A) / S
 upsilon = np.dot(A.T, noise) / S
 decoders = np.dot(np.linalg.pinv(gamma), upsilon)

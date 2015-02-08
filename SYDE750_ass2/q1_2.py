@@ -2,6 +2,11 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
+import sys
+from IPython.core import ultratb
+sys.excepthook = ultratb.FormattedTB(mode='Verbose',
+     color_scheme='Linux', call_pdb=1)
+
 # change the filter from a box to a gaussian
 def gps_whitenoise(T, dt, rms, bandwidth, seed):
 	# randomly generate co-efficient from a gaussian distribution equal to half the size of frequencies
@@ -14,10 +19,19 @@ def gps_whitenoise(T, dt, rms, bandwidth, seed):
 
 	# eliminate anything over the limit
 	# wait, why does this work?
-	frequencies = np.arange(0, coef.size*2, 2.0/T)
-	# so I understand that I have to multiply something here, but what the fuck is that
-	# like, do I sample a bunch of values for each frequency and then multiply it with my existing frequencies?
-	coef[frequencies > limit] = 0.0
+	frequencies = np.arange(0, coef.size*2/T, 2.0/T)
+	coef_mult = []
+	for freq in np.nditer(frequencies):
+		#ipdb.set_trace()
+		scale = np.exp(-freq**2/(2*bandwidth**2))
+		if(scale <= 0.0):
+			coef_mult.append(0.0)
+		else:
+			coef_mult.append(
+				np.random.normal(0, scale)
+			)
+	coef_mult = np.array(coef_mult)
+	coef = coef * coef_mult
 	coef[0] = 0.0
 	if(coef.size % 2 == 1):
 		print("odd")
@@ -41,3 +55,33 @@ def gps_whitenoise(T, dt, rms, bandwidth, seed):
 	curr_rms = np.sqrt(np.sum(np.square(time_domain))/T)
 	time_domain = (rms/curr_rms)*time_domain
 	return time_domain, (rms/curr_rms)*final_coef
+
+period = 1
+
+limit_list = [5, 10, 20]
+for limit in limit_list:
+	res, _ = gps_whitenoise(period, 0.001, 0.5, limit, 0)
+	fig = plt.figure()
+	plt.plot(res)
+	plt.title("Whitenoise Limited to %sHz" %limit)
+	plt.xlabel("Time (s)")
+	fig.savefig("1_2a_freq%s" %limit)
+
+res, coef = gps_whitenoise(period, 0.001, 0.5, 10, 0)
+
+average_coef = np.zeros(coef.shape)
+average_coef = average_coef + np.abs(coef)
+
+for seed in range(1, 99):
+	res, coef = gps_whitenoise(period, 0.001, 0.5, 10, seed)
+	average_coef = average_coef + np.abs(coef)
+average_coef = average_coef / 100
+avg = np.fft.fftshift(average_coef)
+
+omega = np.linspace(-1.0/0.001, 1.0/0.001, average_coef.size)
+fig = plt.figure()
+plt.plot(omega, avg)
+plt.title("Coefficient Frequencies")
+plt.xlabel("$\omega$")
+plt.xlim(-50,50)
+fig.savefig("1_2b")
