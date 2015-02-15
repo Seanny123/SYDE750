@@ -38,7 +38,7 @@ plt.plot(res_sin)
 plt.plot(input_sig(time_steps))
 plt.savefig("3_c")
 
-noise, _ = whitenoise(1, 0.001, 0.5, 5, 0)
+noise, _ = whitenoise(2, 0.001, 0.5, 5, 0)
 neurons = two_neurons()
 res_noise = []
 for val in noise:

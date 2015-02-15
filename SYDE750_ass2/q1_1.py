@@ -7,7 +7,7 @@ from IPython.core import ultratb
 sys.excepthook = ultratb.FormattedTB(mode='Verbose',
      color_scheme='Linux', call_pdb=1)
 
-from utils import whitenoise
+from utils import whitenoise, z_center
 
 period = 1
 
@@ -31,9 +31,8 @@ for seed in range(1, 99):
 average_coef = average_coef / 100
 avg = np.fft.fftshift(average_coef)
 
-omega = np.linspace(-1.0/0.001, 1.0/0.001, average_coef.size)
 fig = plt.figure()
-plt.plot(omega, avg)
+plt.plot(z_center(avg), avg)
 plt.title("Coefficient Frequencies")
 plt.xlabel("$\omega$")
 plt.xlim(-50,50)

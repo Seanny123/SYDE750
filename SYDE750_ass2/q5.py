@@ -1,7 +1,7 @@
 import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
-from utils import whitenoise, two_neurons, calc_rmse
+from utils import whitenoise, two_neurons, calc_rmse, z_center
 
 # assuming we won't plug in a negative t
 def ptsc(t, n, tau):
@@ -15,7 +15,7 @@ figure = plt.figure()
 for n in n_list:
 	res = ptsc(t_h, n, 0.007)
 	res = res/np.linalg.norm(res)
-	plt.plot(res, label="n=%s" %n)
+	plt.plot(z_center(res), res, label="n=%s" %n)
 plt.legend()
 plt.savefig("5_a")
 
@@ -24,7 +24,7 @@ figure = plt.figure()
 for tau in tau_list:
 	res = ptsc(t_h, 0, tau)
 	res = res/np.linalg.norm(res)
-	plt.plot(res, label="tau=%s" %tau)
+	plt.plot(z_center(res), res, label="tau=%s" %tau)
 plt.legend()
 plt.savefig("5_b")
 
@@ -50,12 +50,13 @@ x_hat = np.dot(A, decoders)
 
 # Plot h(t)
 figure = plt.figure()
-plt.plot(h)
+plt.plot(z_center(h), h)
 plt.savefig("5_c1")
 
 # Plot h(t)
+f_h = np.abs(np.fft.fftshift(np.fft.fft(h)))
 figure = plt.figure()
-plt.plot(np.abs(np.fft.fftshift(np.fft.fft(h))))
+plt.plot(z_center(f_h), f_h)
 plt.savefig("5_c2")
 
 # Plot x(t), the spikes, and x_hat

@@ -2,6 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
+from utils import z_center
 import sys
 from IPython.core import ultratb
 sys.excepthook = ultratb.FormattedTB(mode='Verbose',
@@ -78,9 +79,8 @@ for seed in range(1, 99):
 average_coef = average_coef / 100
 avg = np.fft.fftshift(average_coef)
 
-omega = np.linspace(-1.0/0.001, 1.0/0.001, average_coef.size)
 fig = plt.figure()
-plt.plot(omega, avg)
+plt.plot(z_center(avg), avg)
 plt.title("Coefficient Frequencies")
 plt.xlabel("$\omega$")
 plt.xlim(-50,50)

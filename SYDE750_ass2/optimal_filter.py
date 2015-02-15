@@ -123,7 +123,7 @@ for limit in limit_list:
 
 fig = plt.figure()
 for i, h_val in enumerate(h_list):
-	plt.plot(h_val, label="limit=%s" %limit_list[i])
+	plt.plot(np.linspace(-h_val.size/2, h_val.size/2, h_val.size), h_val, label="limit=%s" %limit_list[i])
 plt.legend()
 plt.title("Effect of Changing Limit on Filter")
 plt.xlabel("Time (s)")

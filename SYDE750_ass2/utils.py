@@ -16,6 +16,7 @@ def spiking(potential):
 
 def whitenoise(T, dt, rms, limit, seed):
 	# randomly generate co-efficient from a gaussian distribution equal to half the size of frequencies
+	# 1/dt / 1/T / 2
 	np.random.seed(seed)
 	coef = np.random.normal(0, 1,
 					int( np.ceil(T/(2.0*dt)) )
@@ -24,7 +25,17 @@ def whitenoise(T, dt, rms, limit, seed):
 				)
 
 	# eliminate anything over the limit
-	frequencies = np.arange(0, coef.size*2/T, 2.0/T)
+	#ipdb.set_trace()
+	#frequencies = np.arange(0, 1/dt, 2.0/T)
+	#frequencies = np.arange(0, 1/dt, 2.0*dt/T)
+	#frequencies = np.arange(0, 1/(2.0*dt), T)
+	# this is the one test case that confuses the hell out of me. The frequencies are telling me everything is fine, but when the period changes everything goes to hell
+	# the amount of the signal beig returned is correct, but the filtering is on crack
+	# so one of my measures is lying to me
+	# also, I totally feel like the space between the frequencies should be independant of the period
+	frequencies = np.arange(0, coef.size, 1.0)
+	#ipdb.set_trace()
+	# the number of co
 	coef[frequencies > limit] = 0.0
 	coef[0] = 0.0
 	if(coef.size % 2 == 1):
@@ -123,3 +134,9 @@ def two_neurons():
 		)
 		return spike1, spike2
 	return two_spikes
+
+def z_center(data):
+	if(data.size % 2 == 0):
+		return np.linspace(-data.size/2, data.size/2, data.size)
+	else:
+		return np.linspace(-data.size/2, data.size/2, data.size+1)
