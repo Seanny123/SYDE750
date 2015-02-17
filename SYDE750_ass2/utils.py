@@ -25,17 +25,7 @@ def whitenoise(T, dt, rms, limit, seed):
 				)
 
 	# eliminate anything over the limit
-	#ipdb.set_trace()
-	#frequencies = np.arange(0, 1/dt, 2.0/T)
-	#frequencies = np.arange(0, 1/dt, 2.0*dt/T)
-	#frequencies = np.arange(0, 1/(2.0*dt), T)
-	# this is the one test case that confuses the hell out of me. The frequencies are telling me everything is fine, but when the period changes everything goes to hell
-	# the amount of the signal beig returned is correct, but the filtering is on crack
-	# so one of my measures is lying to me
-	# also, I totally feel like the space between the frequencies should be independant of the period
 	frequencies = np.arange(0, coef.size, 1.0)
-	#ipdb.set_trace()
-	# the number of co
 	coef[frequencies > limit] = 0.0
 	coef[0] = 0.0
 	if(coef.size % 2 == 1):

@@ -148,10 +148,10 @@ time_vals = np.linspace(-200, 200, h_list[0].size)
 
 fig = plt.figure()
 for i, H_val in enumerate(H_list):
-	plt.plot(omega, H_val, label="period=%s" %T_list[i])
+	plt.plot(omega/T_list[i], H_val, label="period=%s" %T_list[i])
 plt.legend()
 plt.title("Effect of Period Change on Filter in Frequency Domain")
-plt.xlabel('$\omega$')
+plt.xlabel('$Frequency (Hz)$')
 plt.savefig("4_f_1")
 
 fig = plt.figure()

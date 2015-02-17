@@ -20,7 +20,7 @@ def gps_whitenoise(T, dt, rms, bandwidth, seed):
 
 	# eliminate anything over the limit
 	# wait, why does this work?
-	frequencies = np.arange(0, coef.size*2/T, 2.0/T)
+	frequencies = np.arange(0, coef.size, 1.0)
 	coef_mult = []
 	for freq in np.nditer(frequencies):
 		#ipdb.set_trace()
@@ -82,6 +82,6 @@ avg = np.fft.fftshift(average_coef)
 fig = plt.figure()
 plt.plot(z_center(avg), avg)
 plt.title("Coefficient Frequencies")
-plt.xlabel("$\omega$")
+plt.xlabel("$Frequency (Hz)$")
 plt.xlim(-50,50)
 fig.savefig("1_2b")
