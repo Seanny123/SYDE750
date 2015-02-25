@@ -211,3 +211,7 @@ def z_center(data):
 		return np.linspace(-data.size/2, data.size/2, data.size)
 	else:
 		return np.linspace(-data.size/2, data.size/2, data.size+1)
+
+def ptsc(t, tau):
+	return_val = np.exp(-t/tau) * (t > 0)
+	return return_val/np.sum(return_val)

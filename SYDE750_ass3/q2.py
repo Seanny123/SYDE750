@@ -2,11 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
-from utils import whitenoise, calc_rmse, lif_ensemble, modified_lif, z_center
-
-def ptsc(t, tau):
-	return_val = np.exp(-t/tau) * (t > 0)
-	return return_val/np.sum(return_val)
+from utils import whitenoise, calc_rmse, lif_ensemble, modified_lif, z_center, ptsc, get_decoders
 
 dt = 0.001
 t_range = np.arange(998)*dt-0.5
@@ -49,11 +45,7 @@ plt.plot(noise_sig)
 plt.savefig("blur_test")
 
 # decode with the normal LIF encoders
-S = A.shape[0]
-gamma = np.dot(A.T, A) / S
-upsilon = np.dot(A.T, noise_sig) / S
-decoders = np.dot(np.linalg.pinv(gamma), upsilon)
-x_hat = np.dot(A, decoders)
+_, x_hat = get_decoders(A.T, A.shape[0], noise_sig)
 
 fig = plt.figure()
 plt.plot(noise_sig)
