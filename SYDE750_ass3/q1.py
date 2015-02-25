@@ -3,12 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-from utils import calc_rmse, rec_lin_neuron, lif_neuron, get_activities, get_decoders, plot_xhat
+from utils import calc_rmse, lif_neuron, get_activities, get_decoders, plot_xhat
 
 # Generate some neurons and plot the tuning curves
 n_neurons = 16
 rmse = []
 
+# this feels weird, because my neurons look weird
+# can I keep the radius of the input = 1, even if my x-intercepts are being generated outside of that range?
 max_firing_rates = np.random.uniform(100, 200, n_neurons)
 x_cepts = np.random.uniform(-2, 2, n_neurons)
 gain_signs = np.random.choice([-1, 1], n_neurons)
@@ -16,7 +18,8 @@ gain_signs = np.random.choice([-1, 1], n_neurons)
 x_vals = np.arange(-2.55, 2.55, 0.05)
 S = x_vals.size
 
-A, neurons = get_activities(lif_neuron, x_vals, n_neurons, x_cepts, max_firing_rates, gain_signs)
+# Okay, I have no idea how to a radius of 2.0, but I'm going to assume it's not a big deal
+A, neurons = get_activities(lif_neuron, x_vals, n_neurons, x_cepts, max_firing_rates, gain_signs, radius=1.0)
 
 # plot the lif neurons
 fig = plt.figure()

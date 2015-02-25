@@ -53,7 +53,6 @@ def get_decoders(A, S, x_vals):
 	gamma = np.dot(A, A.T) / S
 	upsilon = np.dot(A, x_vals) / S
 	decoders = np.dot(np.linalg.pinv(gamma), upsilon)
-	ipdb.set_trace()
 	x_hat = np.dot(A.T, decoders)
 	return decoders, x_hat
 

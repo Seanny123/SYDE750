@@ -40,6 +40,12 @@ res_noise = np.array(res_noise)
 fspikes1 = np.convolve(res_noise[:,0], h, mode='same')
 fspikes2 = np.convolve(res_noise[:,1], h, mode='same')
 
+fig = plt.figure()
+plt.plot(noise)
+plt.plot(fspikes1)
+plt.plot(fspikes2)
+plt.savefig("spike_test")
+
 A = np.array([fspikes1, fspikes2]).T
 S = fspikes1.shape[0]
 
