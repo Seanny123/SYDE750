@@ -8,7 +8,7 @@ dt = 0.001
 t_range = np.arange(998)*dt-0.5
 h = ptsc(t_range, 0.005)
 fig = plt.figure()
-plt.plot(z_center(h))
+plt.plot(z_center(h), h)
 plt.title("post-synaptic current filter")
 plt.savefig("2_a")
 

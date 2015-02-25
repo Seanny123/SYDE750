@@ -16,9 +16,9 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
 		)
 	)
 	# okay, how the hell do you take the radius into account?
-	alpha = 1.0/radius * (1.0 - beta)/(x_inter + 1.0)
+	#alpha = 1/radius * (1.0 - beta)/(x_inter + 1.0)
+	alpha = (1.0 - beta)/(x_inter + radius*1.0)
 	#J_bias = 1.0 - alpha * x_inter * radius
-	#alpha = (1.0 - beta)/(x_inter + 1.0)
 	J_bias = 1.0 - alpha * x_inter
 	def lif(x):
 		J = x * alpha + J_bias

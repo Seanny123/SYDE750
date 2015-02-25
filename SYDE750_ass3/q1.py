@@ -19,7 +19,7 @@ x_vals = np.arange(-2.55, 2.55, 0.05)
 S = x_vals.size
 
 # Okay, I have no idea how to a radius of 2.0, but I'm going to assume it's not a big deal
-A, neurons = get_activities(lif_neuron, x_vals, n_neurons, x_cepts, max_firing_rates, gain_signs, radius=1.0)
+A, neurons = get_activities(lif_neuron, x_vals, n_neurons, x_cepts, max_firing_rates, gain_signs, radius=2.0)
 
 # plot the lif neurons
 fig = plt.figure()
@@ -35,4 +35,4 @@ fig.savefig("1_1a")
 A_noisy = A.T + np.random.normal(scale=0.2*200, size=A.T.shape)
 decoders_noisy, x_hat_noisy = get_decoders(A_noisy.T, S, x_vals)
 
-plot_xhat(x_vals, x_hat_noisy, "noisy neurons, noisy decoders", "1_1b")
+plot_xhat(x_vals, x_hat_noisy, "noiseless neurons, noiseless decoders", "1_1b")
