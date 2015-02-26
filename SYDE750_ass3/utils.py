@@ -15,10 +15,7 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
 			(-1.0/max_fire + t_ref) / t_rc
 		)
 	)
-	# okay, how the hell do you take the radius into account?
-	#alpha = 1/radius * (1.0 - beta)/(x_inter + 1.0)
 	alpha = (1.0 - beta)/(x_inter + radius*1.0)
-	#J_bias = 1.0 - alpha * x_inter * radius
 	J_bias = 1.0 - alpha * x_inter
 	def lif(x):
 		J = x * alpha + J_bias
@@ -33,18 +30,14 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
 		return return_val
 	return lif
 
-def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02):
+def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02, radius=2.0):
 	beta = 1.0 / (
 		1.0 - np.exp(
 			(-1.0/max_fire + t_ref) / t_rc
 		)
 	)
-	J_bias = 1.0 / (
-		1.0 - np.exp(
-			(-1.0/x0_fire + t_ref) / t_rc
-		)
-	)
-	alpha = beta - J_bias
+	alpha = (1.0 - beta)/(x0_fire + radius*1.0)
+	J_bias = 1.0 - alpha * x0_fire
 	def lif_current(x):
 		J = x * alpha + J_bias
 		if(J > 1):
