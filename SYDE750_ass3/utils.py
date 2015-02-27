@@ -9,6 +9,16 @@ def calc_rmse(predictions, targets):
 def drms(sig):
 	return np.sqrt(np.sum(np.square(sig))/sig.size)
 
+def z_center(data):
+	if(data.size % 2 == 0):
+		return np.linspace(-data.size/2, data.size/2, data.size)
+	else:
+		return np.linspace(-data.size/2, data.size/2, data.size+1)
+
+def ptsc(t, tau):
+	return_val = np.exp(-t/tau) * (t > 0)
+	return return_val/np.sum(return_val)
+
 def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
 	beta = 1.0 / (
 		1.0 - np.exp(
@@ -177,12 +187,16 @@ def lif_ensemble(lifs, encoders):
 		return spikes
 	return spiking_ensemble
 
-def z_center(data):
-	if(data.size % 2 == 0):
-		return np.linspace(-data.size/2, data.size/2, data.size)
-	else:
-		return np.linspace(-data.size/2, data.size/2, data.size+1)
-
-def ptsc(t, tau):
-	return_val = np.exp(-t/tau) * (t > 0)
-	return return_val/np.sum(return_val)
+def generate_ensemble(n_neurons):
+	max_firing_rates = np.random.uniform(100, 200, n_neurons)
+	x_cepts = np.random.uniform(-2, 2, n_neurons)
+	gain_signs = np.random.choice([-1, 1], n_neurons)
+	lifs = []
+	for i in range(n_neurons):
+		lifs.append(
+			modified_lif(
+				x_cepts[i],
+				max_firing_rates[i]
+			)
+		)
+	return lif_ensemble(lifs, gain_signs)

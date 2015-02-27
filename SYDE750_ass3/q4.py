@@ -2,7 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
-from utils import whitenoise, calc_rmse, lif_ensemble, modified_lif, ptsc, get_decoders
+from utils import whitenoise, calc_rmse, ptsc, get_decoders, generate_ensemble
 
 import sys
 from IPython.core import ultratb
@@ -18,32 +18,10 @@ h_range = np.arange(1000)*dt-0.5
 h = ptsc(h_range, 0.005)
 
 # first ensemble
-max_firing_rates = np.random.uniform(100, 200, n_neurons)
-x_cepts = np.random.uniform(-2, 2, n_neurons)
-gain_signs = np.random.choice([-1, 1], n_neurons)
-lifs = []
-for i in range(n_neurons):
-	lifs.append(
-		modified_lif(
-			x_cepts[i],
-			max_firing_rates[i]
-		)
-	)
-ensemble = lif_ensemble(lifs, gain_signs)
+ensemble = generate_ensemble(n_neurons)
 
 # second ensemble
-max_firing_rates = np.random.uniform(100, 200, n_neurons)
-x_cepts = np.random.uniform(-2, 2, n_neurons)
-gain_signs = np.random.choice([-1, 1], n_neurons)
-lifs = []
-for i in range(n_neurons):
-	lifs.append(
-		modified_lif(
-			x_cepts[i],
-			max_firing_rates[i]
-		)
-	)
-end_ensemble = lif_ensemble(lifs, gain_signs)
+end_ensemble = generate_ensemble(n_neurons)
 
 # this is the goal function to decode
 decode_func = lambda x: 2*x + 1

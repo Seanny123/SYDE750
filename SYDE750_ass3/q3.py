@@ -2,7 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
-from utils import whitenoise, calc_rmse, lif_ensemble, modified_lif, z_center, ptsc, get_decoders
+from utils import whitenoise, calc_rmse, z_center, ptsc, get_decoders, generate_ensemble
 
 size_list = [8, 16, 32, 64, 128, 256]
 dt = 0.001
@@ -13,18 +13,7 @@ rmse_list = []
 
 for n_neurons in size_list:
 	# create the ensemble
-	max_firing_rates = np.random.uniform(100, 200, n_neurons)
-	x_cepts = np.random.uniform(-2, 2, n_neurons)
-	gain_signs = np.random.choice([-1, 1], n_neurons)
-	lifs = []
-	for i in range(n_neurons):
-		lifs.append(
-			modified_lif(
-				x_cepts[i],
-				max_firing_rates[i]
-			)
-		)
-	ensemble = lif_ensemble(lifs, gain_signs)
+	ensemble = generate_ensemble(n_neurons)
 
 	# get the activities
 	res_noise = []
