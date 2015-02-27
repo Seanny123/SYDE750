@@ -2,7 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
-from utils import whitenoise, calc_rmse, ptsc, get_decoders, generate_ensemble
+from utils import whitenoise, calc_rmse, ptsc, get_decoders, generate_ensemble, spike_and_filter
 
 import sys
 from IPython.core import ultratb
@@ -28,67 +28,34 @@ decode_func = lambda x: 2*x + 1
 
 # the first ensemble computes the aformentioned function
 x_vals = np.linspace(-2, 2, t_range.size)
-res = []
-for val in np.nditer(x_vals):
-	res.append(ensemble(val))
-res = np.array(res)
-
-# get activities based off of linear function
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+A = spike_and_filter(ensemble, x_vals.tolist(), h)
 
 # decode with the modified function (got this from the notes)
 first_decoders, x_hat = get_decoders(A.T, A.shape[0], decode_func(x_vals))
 
-# get the decoders for the other thing... huh... how do I do that...
-x_vals = np.linspace(-2, 2, t_range.size)
-res = []
-for val in np.nditer(x_vals):
-	res.append(end_ensemble(val))
-res = np.array(res)
-
-# get activities based off of linear function
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+# get the decoders for the other ensemble
+A = spike_and_filter(end_ensemble, x_vals.tolist(), h)
 
 end_decoders, x_hat = get_decoders(A.T, A.shape[0], x_vals)
 
 # get the activities from the new input
 input_func = lambda t: t - 1
-res = []
-for val in np.nditer(input_func(t_range)):
-	res.append(ensemble(val))
-res = np.array(res)
-
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+A = spike_and_filter(ensemble, input_func(t_range).tolist(), h)
 
 # decode them and plug them into the next population
 new_x_hat = np.dot(A, first_decoders)
 
-res = []
-for val in np.nditer(new_x_hat):
-	res.append(end_ensemble(val))
-res = np.array(res)
-
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+A = spike_and_filter(end_ensemble, new_x_hat.tolist(), h)
 
 y_hat = np.dot(A, end_decoders)
 
 fig = plt.figure()
 plt.plot(t_range, input_func(t_range), label="input")
 plt.plot(t_range, decode_func(input_func(t_range)), label="actual")
-plt.plot(t_range, new_x_hat, label="x approximate")
 plt.plot(t_range, y_hat, label="y approximate")
 plt.legend()
 plt.savefig("4_a")
 
-"""
 # test this method on a bunch of other functions
 def input_func(t_range, steps=4):
 	y_vals = np.random.uniform(-1, 0, steps)
@@ -142,4 +109,3 @@ plt.plot(t_range, decode_func(input_func(t_range)), label="actual")
 plt.plot(t_range, new_x_hat, label="approximate")
 plt.legend()
 plt.savefig("4_c")
-"""

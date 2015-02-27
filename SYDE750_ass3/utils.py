@@ -200,3 +200,15 @@ def generate_ensemble(n_neurons):
 			)
 		)
 	return lif_ensemble(lifs, gain_signs)
+
+def spike_and_filter(ensemble, input_list, h):
+	res = []
+	for val in input_list:
+		res.append(ensemble(val))
+	res = np.array(res)
+
+	# get activities based off of linear function
+	A = np.zeros((res.shape), dtype=np.float)
+	for i_n in range(res.shape[1]):
+		A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+	return A
