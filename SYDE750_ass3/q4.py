@@ -67,45 +67,36 @@ def input_func(t_range, steps=4):
 
 input_sig = input_func(t_range)
 
-res = []
-for val in np.nditer(input_sig):
-	res.append(ensemble(val))
-res = np.array(res)
-
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+A = spike_and_filter(ensemble, input_sig.tolist(), h)
 
 # decode them to make sure they aren't totally absurd
-# why can't it just track the value -0.5?
 new_x_hat = np.dot(A, first_decoders)
+
+A = spike_and_filter(end_ensemble, new_x_hat.tolist(), h)
+
+y_hat = np.dot(A, end_decoders)
 
 fig = plt.figure()
 plt.plot(t_range, input_func(t_range), label="input")
 plt.plot(t_range, decode_func(input_sig), label="actual")
-plt.plot(t_range, new_x_hat, label="approximate")
+plt.plot(t_range, y_hat, label="approximate")
 plt.legend()
 plt.savefig("4_b")
 
-noise_sig, _ = whitenoise(1, dt, 1, 5, 0)
-
 input_func = lambda t: 0.2*np.sin(6*np.pi*t)
 
-res = []
-for val in np.nditer(input_func(t_range)):
-	res.append(ensemble(val))
-res = np.array(res)
-
-A = np.zeros((t_range.size, res.shape[1]))
-for i_n in range(len(lifs)):
-	A[:,i_n] = np.convolve(res[:,i_n], h, mode='same')
+A = spike_and_filter(ensemble, input_func(t_range).tolist(), h)
 
 # decode them to make sure they aren't totally absurd
 new_x_hat = np.dot(A, first_decoders)
 
+A = spike_and_filter(end_ensemble, new_x_hat.tolist(), h)
+
+y_hat = np.dot(A, end_decoders)
+
 fig = plt.figure()
 plt.plot(t_range, input_func(t_range), label="input")
 plt.plot(t_range, decode_func(input_func(t_range)), label="actual")
-plt.plot(t_range, new_x_hat, label="approximate")
+plt.plot(t_range, y_hat, label="approximate")
 plt.legend()
 plt.savefig("4_c")
