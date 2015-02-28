@@ -3,6 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
+import sys
+from IPython.core import ultratb
+sys.excepthook = ultratb.FormattedTB(mode='Verbose',
+     color_scheme='Linux', call_pdb=1)
+
 def calc_rmse(predictions, targets):
 	return np.sqrt( (np.square(predictions - targets)).mean() )
 
@@ -180,17 +185,45 @@ def lif_ensemble(lifs, encoders):
 			spikes.append(
 				spiking(
 					neuron.spike(
-						lifs[n_i](x*encoders[n_i])
+						lifs[n_i](
+							np.dot(x, encoders[n_i])
+						)
 					)
 				)
 			)
 		return spikes
 	return spiking_ensemble
 
-def generate_ensemble(n_neurons):
+def lif_ensemble_2d(lifs, encoders):
+	lifs = lifs
+	encoders = encoders
+	neurons = []
+	for l_i in range(len(lifs)):
+		neurons.append(SpikingLif())
+
+	def spiking_ensemble(x):
+		# generate spikes
+		spikes = []
+		for n_i, neuron in enumerate(neurons):
+			spikes.append(
+				spiking(
+					neuron.spike(
+						lifs[n_i](
+							np.dot(x, encoders[n_i, :])
+						)
+					)
+				)
+			)
+		return spikes
+	return spiking_ensemble
+
+def generate_ensemble(n_neurons, ensemble_type=lif_ensemble, encoders=None):
 	max_firing_rates = np.random.uniform(100, 200, n_neurons)
 	x_cepts = np.random.uniform(-2, 2, n_neurons)
-	gain_signs = np.random.choice([-1, 1], n_neurons)
+	if(encoders == None):
+		gain_signs = np.random.choice([-1, 1], n_neurons)
+	else:
+		gain_signs = encoders
 	lifs = []
 	for i in range(n_neurons):
 		lifs.append(
@@ -199,7 +232,7 @@ def generate_ensemble(n_neurons):
 				max_firing_rates[i]
 			)
 		)
-	return lif_ensemble(lifs, gain_signs)
+	return ensemble_type(lifs, gain_signs)
 
 def spike_and_filter(ensemble, input_list, h):
 	res = []

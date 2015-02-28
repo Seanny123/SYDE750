@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-from utils import calc_rmse, rec_lin_neuron, lif_neuron, get_activities, get_decoders, plot_xhat
+from utils import calc_rmse, rec_lin_neuron, lif_neuron, get_activities, get_decoders
 
 def gen_rand_uc_vecs(dims, number):
 	vecs = np.random.normal(size=(number,dims))

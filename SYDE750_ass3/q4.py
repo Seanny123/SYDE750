@@ -2,12 +2,7 @@ import numpy as np
 import ipdb
 import matplotlib.pyplot as plt
 
-from utils import whitenoise, calc_rmse, ptsc, get_decoders, generate_ensemble, spike_and_filter
-
-import sys
-from IPython.core import ultratb
-sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-     color_scheme='Linux', call_pdb=1)
+from utils import ptsc, get_decoders, generate_ensemble, spike_and_filter
 
 n_neurons = 200
 
@@ -69,7 +64,6 @@ input_sig = input_func(t_range)
 
 A = spike_and_filter(ensemble, input_sig.tolist(), h)
 
-# decode them to make sure they aren't totally absurd
 new_x_hat = np.dot(A, first_decoders)
 
 A = spike_and_filter(end_ensemble, new_x_hat.tolist(), h)
@@ -87,7 +81,6 @@ input_func = lambda t: 0.2*np.sin(6*np.pi*t)
 
 A = spike_and_filter(ensemble, input_func(t_range).tolist(), h)
 
-# decode them to make sure they aren't totally absurd
 new_x_hat = np.dot(A, first_decoders)
 
 A = spike_and_filter(end_ensemble, new_x_hat.tolist(), h)
