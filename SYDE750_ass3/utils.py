@@ -171,9 +171,9 @@ class SpikingLif(object):
 				self.refac_time = 0.0
 			return 0.0
 
-def lif_ensemble(lifs, encoders):
+def lif_ensemble(lifs, arg_encoders):
 	lifs = lifs
-	encoders = encoders
+	encoders = arg_encoders
 	neurons = []
 	for l_i in range(len(lifs)):
 		neurons.append(SpikingLif())
@@ -194,9 +194,9 @@ def lif_ensemble(lifs, encoders):
 		return spikes
 	return spiking_ensemble
 
-def lif_ensemble_2d(lifs, encoders):
+def lif_ensemble_2d(lifs, arg_encoders):
 	lifs = lifs
-	encoders = encoders
+	encoders = arg_encoders
 	neurons = []
 	for l_i in range(len(lifs)):
 		neurons.append(SpikingLif())
@@ -205,11 +205,12 @@ def lif_ensemble_2d(lifs, encoders):
 		# generate spikes
 		spikes = []
 		for n_i, neuron in enumerate(neurons):
+			#ipdb.set_trace()
 			spikes.append(
 				spiking(
 					neuron.spike(
 						lifs[n_i](
-							np.dot(x, encoders[n_i, :])
+							np.dot(x, encoders[n_i])
 						)
 					)
 				)

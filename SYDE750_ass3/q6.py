@@ -6,7 +6,6 @@ from utils import whitenoise, ptsc, generate_ensemble, spike_and_filter, lif_ens
 
 def gen_rand_uc_vecs(dims, number):
 	vecs = np.random.normal(size=(number,dims))
-	print(vecs.shape)
 	mags = np.linalg.norm(vecs, axis=-1)
 	return vecs / mags[..., np.newaxis]
 
@@ -27,48 +26,61 @@ def get_ens_dec_2d(n_neurons, x_vals, h, decode_func=None):
 	ensemble = generate_ensemble(n_neurons, ensemble_type=lif_ensemble_2d, encoders=gen_rand_uc_vecs(2,n_neurons))
 	A = spike_and_filter(ensemble, x_vals.T, h)
 	if(decode_func == None):
-		decoders = get_2d_decoders(A.T, A.shape[0], decode_func(x_vals))
+		decoders, x_hat = get_2d_decoders(A.T, A.shape[0], x_vals)
+		fig = plt.figure()
+		plt.plot(x_vals.T, label="actual")
+		plt.plot(x_hat, label="approx")
+		plt.legend()
+		plt.savefig("decode_test")
 	else:
-		decoders = get_2d_decoders(A.T, A.shape[0], x_vals)
+		decoders, _ = get_2d_decoders(A.T, A.shape[0], decode_func(x_vals))
 	return ensemble, decoders
 
 # lesson learned, think about higher dimensions before writing code
 # the encoder multiplication should have been taken out of the spiking code
 
-n_neurons = 200
+n_neurons = 400
 
 dt = 0.001
 t_range = np.arange(0, 1, dt)
 h_range = np.arange(1000)*dt-0.5
 h = ptsc(h_range, 0.005)
 
-a = np.linspace(-1.0,1.0,100)
-b = np.linspace(-1.0,1.0,100)
+a = np.linspace(-2.0,2.0,100)
+b = np.linspace(-2.0,2.0,100)
 X,Y = np.meshgrid(a, b)
-x_vals = [X.reshape((1,-1))[0], Y.reshape((1,-1))[0]]
+x_vals = np.array([X.reshape((1,-1))[0], Y.reshape((1,-1))[0]])
 
-w_ensemble, w_decoders = get_ens_dec_2d(n_neurons, x_vals, h)
+# So the way we train our ensemble is pretty weird and I don't understand it.
+
+#w_ensemble, w_decoders = get_ens_dec_2d(n_neurons, x_vals, h)
+print("generating x_ensemble")
+# why the hell is this so slow?
 x_ensemble, x_decoders = get_ens_dec_2d(n_neurons, x_vals, h)
+"""
 y_decode_func = lambda y: -3 * y
 y_ensemble, y_decoders = get_ens_dec_2d(n_neurons, x_vals, h, y_decode_func)
 q_decode_func = lambda q: -2 * q
 q_ensemble, q_decoders = get_ens_dec_2d(n_neurons, x_vals, h, q_decode_func)
 z_decode_func = lambda z: 2 * z
 z_ensemble, z_decoders = get_ens_dec_2d(n_neurons, x_vals, h, z_decode_func)
+"""
 
 # simulate each of them
-# this really needs to be fixed
-x_input_func = lambda t: np.array([0.5, 1])
+print("simulating")
+#x_input_func = lambda t: np.array([[0.5, 1],]*t.size)
+def x_input_func(t):
+	return np.array([np.array([0.5]*t.size), np.sin(3*np.pi*t)]).T
+
 A = spike_and_filter(x_ensemble, x_input_func(t_range), h)
-x_hat = np.dot(A, x_decoders[0])
+x_hat = np.dot(A, x_decoders.T)
 
 fig = plt.figure()
-plt.plot(
-	x_decode_func(x_input_func(t_range)),
-label="x actual")
+plt.plot(x_input_func(t_range), label="x actual")
 plt.plot(x_hat, label="x approx")
 plt.legend()
 plt.savefig("2d_test")
+ipdb.set_trace()
 
 """
 y_input_func = lambda t: np.array([0.1, 0.3])
@@ -90,5 +102,5 @@ plt.plot(
 label="w actual")
 plt.plot(w_hat, label="w approx")
 plt.legend()
-plt.savefig("5_a")
+plt.savefig("6_a")
 """

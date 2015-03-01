@@ -56,3 +56,25 @@ plt.plot(x_decode_func(x_input_func(t_range))+y_decode_func(y_input_func(t_range
 plt.plot(z_hat, label="z approx")
 plt.legend()
 plt.savefig("5_a")
+
+h_range = np.arange(998)*dt-0.5
+h = ptsc(h_range, 0.005)
+
+x_noise, _ = whitenoise(1, dt, 1, 8, 0)
+A = spike_and_filter(x_ensemble, x_noise, h)
+x_hat = np.dot(A, x_decoders)
+
+y_noise, _ = whitenoise(1, dt, 0.5, 5, 0)
+A = spike_and_filter(y_ensemble, y_noise, h)
+y_hat = np.dot(A, y_decoders)
+
+A = spike_and_filter(z_ensemble, (x_hat+y_hat), h)
+z_hat = np.dot(A, z_decoders)
+
+fig = plt.figure()
+plt.plot(x_noise, label="x input")
+plt.plot(y_noise, label="y input")
+plt.plot(x_noise+y_noise, label="z actual")
+plt.plot(z_hat, label="z approx")
+plt.legend()
+plt.savefig("5_b")
