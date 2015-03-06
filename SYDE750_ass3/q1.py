@@ -29,7 +29,7 @@ plt.xlim([-2.5,2.5])
 fig.savefig("1_1a")
 
 # do noisy generation and decoding
-A_noisy = A.T + np.random.normal(scale=0.2*200, size=A.T.shape)
+A_noisy = A.T + np.random.normal(scale=0.1*200, size=A.T.shape)
 decoders_noisy, x_hat_noisy = get_decoders(A_noisy.T, S, x_vals)
 
 plot_xhat(x_vals, x_hat_noisy, "noisy neurons, noisy decoders", "1_1b")

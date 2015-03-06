@@ -56,7 +56,7 @@ def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02, radius=2.0):
 	def lif_current(x):
 		J = x * alpha + J_bias
 		if(J > 1):
-			return J
+			return 1.0/(t_ref-t_rc*np.log(1-1/J))
 		else:
 			return 0.0
 
@@ -233,6 +233,7 @@ def generate_ensemble(n_neurons, ensemble_type=lif_ensemble, encoders=None):
 				max_firing_rates[i]
 			)
 		)
+	# okay, this needs to return the lifs...
 	return ensemble_type(lifs, gain_signs)
 
 def spike_and_filter(ensemble, input_list, h):

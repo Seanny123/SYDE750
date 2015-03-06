@@ -60,7 +60,7 @@ def input_func(t_range, steps=4):
 		return_vals.append(y_vals[t/increment])
 	return np.array(return_vals)
 
-input_sig = input_func(t_range)
+input_sig = input_func(t_range, steps=10)
 
 A = spike_and_filter(ensemble, input_sig.tolist(), h)
 
