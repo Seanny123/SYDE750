@@ -11,12 +11,23 @@ rmse = []
 
 max_firing_rates = np.random.uniform(100, 200, n_neurons)
 x_cepts = np.random.uniform(-2, 2, n_neurons)
-gain_signs = np.random.choice([-1, 1], n_neurons)
+encoders = np.random.choice([-1, 1], n_neurons)
 
 x_vals = np.arange(-2.55, 2.55, 0.05)
 S = x_vals.size
 
-A, neurons = get_activities(lif_neuron, x_vals, n_neurons, x_cepts, max_firing_rates, gain_signs, radius=2.0)
+lifs = []
+A = np.zeros( (n_neurons, x_vals.size) )
+for i in range(n_neurons):
+	lifs.append(
+		lif_neuron(
+			x_cepts[i],
+			max_firing_rates[i]
+		)
+	)
+	# get the activities for the decoders
+	for i_x, x in enumerate(x_vals):
+		A[i,i_x] = lifs[i](np.dot(x, encoders[i]))
 
 # plot the lif neurons
 fig = plt.figure()

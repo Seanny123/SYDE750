@@ -20,11 +20,14 @@ def z_center(data):
 	else:
 		return np.linspace(-data.size/2, data.size/2, data.size+1)
 
-def ptsc(t, tau):
+def ptsc(t, tau, dt=0.001):
 	return_val = np.exp(-t/tau) * (t > 0)
-	return return_val/np.sum(return_val)
+	return return_val/(np.sum(return_val)*dt)
 
-def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
+# the following two neurons should really be merged into one object
+
+# this neuron returns the firing rate of the lif
+def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=2.0):
 	beta = 1.0 / (
 		1.0 - np.exp(
 			(-1.0/max_fire + t_ref) / t_rc
@@ -34,17 +37,14 @@ def lif_neuron(x_inter, max_fire, t_ref=0.002, t_rc=0.02, radius=1.0):
 	J_bias = 1.0 - alpha * x_inter
 	def lif(x):
 		J = x * alpha + J_bias
-		return_val = np.zeros(x.shape[0])
-		# Select all the values where J > 1
-		return_val[J > 1] += np.maximum(
-						# Caluclate the activity
-						1.0/(t_ref-t_rc*np.log(1-1/J[J > 1])),
-						# make it zero if it's below zero
-						np.zeros(return_val[J > 1].size)
-					)
-		return return_val
+		if(J > 1):
+			return 1.0/(t_ref-t_rc*np.log(1-1/J))
+		else:
+			return 0.0
+
 	return lif
 
+# this neuron returns the current of the lif
 def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02, radius=2.0):
 	beta = 1.0 / (
 		1.0 - np.exp(
@@ -56,7 +56,7 @@ def modified_lif(x0_fire, max_fire, t_ref=0.002, t_rc=0.02, radius=2.0):
 	def lif_current(x):
 		J = x * alpha + J_bias
 		if(J > 1):
-			return 1.0/(t_ref-t_rc*np.log(1-1/J))
+			return J
 		else:
 			return 0.0
 
@@ -70,9 +70,9 @@ def get_activities(neuron_type, x_vals, n_neurons, x_cepts, max_firing_rates, ga
 		A[i,:] = neuron_list[i](x_vals*gain_signs[i])
 	return A, neuron_list
 
-def get_decoders(A, S, x_vals):
-	gamma = np.dot(A, A.T) / S
-	upsilon = np.dot(A, x_vals) / S
+def get_decoders(A, dx, x_vals):
+	gamma = np.dot(A, A.T) * dx
+	upsilon = np.dot(A, x_vals) * dx
 	decoders = np.dot(np.linalg.pinv(gamma), upsilon)
 	x_hat = np.dot(A.T, decoders)
 	return decoders, x_hat
@@ -146,7 +146,6 @@ class SpikingLif(object):
 		self.refac = True
 		self.dt = dt
 		self.potential = 0.0
-		self.spike_count = 0
 
 	def spike(self, current):
 		if(self.refac == False):
@@ -159,7 +158,6 @@ class SpikingLif(object):
 				# start the refactory period and reset the potential
 				self.refac = True
 				self.potential = 0.0
-				self.spike_count += 1
 				return 2.0
 			return self.potential
 		else:
