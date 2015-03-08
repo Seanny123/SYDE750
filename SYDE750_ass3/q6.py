@@ -10,7 +10,7 @@ def gen_rand_uc_vecs(dims, number):
 	return vecs / mags[..., np.newaxis]
 
 def get_2d_decoders(A, dx, x_vals):
-	gamma = np.dot(A, A.T) / S
+	gamma = np.dot(A, A.T) * dx
 	# so if I have a two dimensional upsilon....
 	upsilon_0 = np.dot(A, x_vals[0]) * dx
 	upsilon_1 = np.dot(A, x_vals[1]) * dx
