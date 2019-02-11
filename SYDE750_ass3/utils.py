@@ -113,7 +113,6 @@ def whitenoise(T, dt, rms, limit, seed):
 	coef[frequencies > limit] = 0.0
 	coef[0] = 0.0
 	if(coef.size % 2 == 1):
-		print("odd")
 		final_coef = np.zeros(coef[1:].size * 2 + 1, dtype=np.complex_)
 		final_coef[coef.size] = coef
 		final_coef[coef.size:] = coef[1:][::-1].conj()

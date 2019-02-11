@@ -1,5 +1,4 @@
 import numpy as np
-import ipdb
 import matplotlib.pyplot as plt
 
 from utils import ptsc, get_decoders, generate_ensemble, spike_and_filter
